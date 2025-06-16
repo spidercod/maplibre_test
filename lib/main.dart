@@ -82,8 +82,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Location services are disabled. Please enable them.')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location services are disabled. Please enable them.'),
+        ),
+      );
       return Future.error('Location services are disabled.');
     }
 
@@ -92,85 +95,83 @@ class _MyHomePageState extends State<MyHomePage> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Location permissions are denied.')));
+          const SnackBar(content: Text('Location permissions are denied.')),
+        );
         return Future.error('Location permissions are denied');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
           content: Text(
-              'Location permissions are permanently denied. Please enable them from settings.')));
+            'Location permissions are permanently denied. Please enable them from settings.',
+          ),
+        ),
+      );
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
     return await Geolocator.getCurrentPosition();
   }
 
   // Use a getter for _widgetOptions to access instance members like _counter and context
   List<Widget> get _widgetOptions => <Widget>[
-        MapScreen(key: _mapScreenKey), // Pass the key here
-        // Original counter column
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter', // Accesses _counter from _MyHomePageState
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+    MapScreen(key: _mapScreenKey), // Pass the key here
+    // Original counter column
+    Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        const Text('You have pushed the button this many times:'),
+        Text(
+          '$_counter', // Accesses _counter from _MyHomePageState
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
-      ];
+      ],
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      floatingActionButton: _selectedIndex == 0
-          ? FloatingActionButton(
-              onPressed: () async {
-                try {
-                  final Position position = await _determinePosition();
-                  _mapScreenKey.currentState?.animateToLocation(
-                    LatLng(position.latitude, position.longitude),
-                  );
-                } catch (e) {
-                  // e is expected to be a String from _determinePosition's Future.error
-                  if (mounted && e is String) { // Check if mounted before using context
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error: $e')),
-                    );
-                  }
-                  print("Error getting location or animating map: $e"); // Keep for debugging
-                }
-              },
-              tooltip: 'Get Location',
-              child: const Icon(Icons.my_location),
-            )
-          : _selectedIndex == 1
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      floatingActionButton:
+          _selectedIndex == 0
               ? FloatingActionButton(
-                  onPressed: _incrementCounter,
-                  tooltip: 'Increment',
-                  child: const Icon(Icons.add),
-                )
+                onPressed: () async {
+                  try {
+                    final Position position = await _determinePosition();
+                    _mapScreenKey.currentState?.animateToLocation(
+                      LatLng(position.latitude, position.longitude),
+                    );
+                  } catch (e) {
+                    // e is expected to be a String from _determinePosition's Future.error
+                    if (mounted && e is String) {
+                      // Check if mounted before using context
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
+                    print(
+                      "Error getting location or animating map: $e",
+                    ); // Keep for debugging
+                  }
+                },
+                tooltip: 'Get Location',
+                child: const Icon(Icons.my_location),
+              )
+              : _selectedIndex == 1
+              ? FloatingActionButton(
+                onPressed: _incrementCounter,
+                tooltip: 'Increment',
+                child: const Icon(Icons.add),
+              )
               : null,
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Map',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.numbers),
-            label: 'Counter',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Map'),
+          BottomNavigationBarItem(icon: Icon(Icons.numbers), label: 'Counter'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

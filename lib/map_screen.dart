@@ -8,7 +8,8 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => MapScreenState(); // Public State class
 }
 
-class MapScreenState extends State<MapScreen> { // Made public
+class MapScreenState extends State<MapScreen> {
+  // Made public
   MapLibreMapController? mapController;
 
   @override
@@ -39,15 +40,14 @@ class MapScreenState extends State<MapScreen> { // Made public
     // not need its own Scaffold/AppBar.
     // For now, keeping it as is, but this could be refactored.
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MapLibre GL'),
-      ),
+      appBar: AppBar(title: const Text('MapLibre GL')),
       body: MapLibreMap(
         styleString: 'https://map.witel.ir/styles/bright/style.json',
         initialCameraPosition: const CameraPosition(
           target: LatLng(35.6892, 51.3890), // Default to Tehran, Iran
           zoom: 12.0,
         ),
+
         onMapCreated: _onMapCreated,
         onStyleLoadedCallback: _onStyleLoaded,
       ),
